@@ -42,7 +42,23 @@ namespace McForge
                 while (true)
                 {
                     string input = Console.ReadLine();
-                    if (input.ToLower() == "/stop") break;
+                    if (String.IsNullOrWhiteSpace(input)) continue;
+                    if (input.Length > 1 && input[0] == '/' && input[1] != '/')
+                        switch (input.ToLower())
+                        {
+                            case "/stop":
+                                return; ;
+                            case "/save":
+                                Console.WriteLine(Server.Mainlevel.SaveLevel() ? "Sucessfully save level." : "Failed to save level.");
+                                continue;
+                            case "/load":
+                                Console.WriteLine(Level.LoadLevel("main") != null ? "Sucessfully loaded level." : "Failed to load level.");
+                                continue;
+                            default:
+                                Console.WriteLine("Invalid command.");
+                                continue;
+                        }
+                    Player.UniversalChat("%1[%eConsole%1]%0:%f " + input); //cant get the first color code to work
                 }
             }
         }

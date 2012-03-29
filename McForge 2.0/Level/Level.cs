@@ -16,6 +16,8 @@ permissions and limitations under the Licenses.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.IO.Compression;
 using System.Text;
 
 namespace McForge
@@ -41,20 +43,23 @@ namespace McForge
 		public Point3 Size;
 		public Point3 SpawnPos;
 		public byte[] SpawnRot;
+        private static byte[] magic = new byte[4] { 0x4D, 0x43, 0x32, 0x00 /*MC2. in text (magic number)*/ };
+        public string Name;
 
 		//public byte[,,] data; //Three dimensional array :D
 		public byte[] data;
 
-		private Level(Point3 size)
+		private Level(string name, Point3 size)
 		{
+            Name = name;
 			Size = size;
 			//data = new byte[Size.x, Size.z, Size.y];
 			data = new byte[TotalBlocks];
 		}
 
-		public static Level CreateLevel(Point3 size, LevelTypes type)
+		public static Level CreateLevel(string name, Point3 size, LevelTypes type)
 		{
-			Level newlevel = new Level(size);
+			Level newlevel = new Level(name, size);
 
 			switch(type)
 			{
@@ -88,11 +93,45 @@ namespace McForge
 			SpawnRot = new byte[2]{0, 0};
 		}
 
-		public Level LoadLevel()
+		public static Level LoadLevel(string name)
 		{
-			//TODO
-			return null;
+            Level level;
+            if (!File.Exists("levels\\" + name + ".mc2")) return null;
+            using (FileStream fs = new FileStream("levels\\" + name + ".mc2", FileMode.Open))
+            {
+                using (GZipStream gz = new GZipStream(fs, CompressionMode.Decompress))
+                {
+                    byte[] temp = new byte[4];
+                    fs.Read(temp, 0, 4);
+                    if (!temp.SequenceEqual(magic)) { Server.Log("Invalid level file."); return null; }
+                    temp = new byte[10];
+                    fs.Read(temp, 0, 6);
+                    level = new Level(name, new Point3(BitConverter.ToInt16(temp, 0), BitConverter.ToInt16(temp, 2), BitConverter.ToInt16(temp, 4)));
+                    gz.Read(level.data, 0, level.data.Length);
+                }
+            }
+            level.SpawnPos = new Point3((short)(level.Size.x / 2), (short)(level.Size.z / 2), (short)(level.Size.y));
+            level.SpawnRot = new byte[2] { 0, 0 };
+			return level;
 		}
+
+        public bool SaveLevel()
+        {
+            if (!Directory.Exists("levels")) return false;
+            using (FileStream fs = new FileStream("levels\\" + Name + ".mc2", FileMode.Create))
+            {
+                    using (GZipStream gz = new GZipStream(fs, CompressionMode.Compress))
+                    {
+                        fs.Write(magic, 0, 4); // writes the filetype identifier ("MC2.")
+                        fs.Write(BitConverter.GetBytes(Size.x), 0, 2);
+                        fs.Write(BitConverter.GetBytes(Size.z), 0, 2);
+                        fs.Write(BitConverter.GetBytes(Size.y), 0, 2);
+                        //Array.ForEach(data, ms.WriteByte);
+                        gz.Write(data, 0, data.Length); // will need to be changed probably (for custom blocks maybe).
+                    }
+            }
+            return true;
+        }
 
 		public void ForEachBlockXYZ(ForEachBlockDelegateXYZ FEBD)
 		{

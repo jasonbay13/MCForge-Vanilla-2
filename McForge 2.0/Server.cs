@@ -40,7 +40,9 @@ namespace McForge
 		{
             StartListening();
 
-			Mainlevel = Level.CreateLevel(new Point3(256, 256, 64), Level.LevelTypes.Flat);
+            Mainlevel = Level.LoadLevel("main");
+            if (Mainlevel == null)
+                Mainlevel = Level.CreateLevel("main", new Point3(256, 256, 64), Level.LevelTypes.Flat);
 
 
 			UpdateTimer = new System.Timers.Timer(100);

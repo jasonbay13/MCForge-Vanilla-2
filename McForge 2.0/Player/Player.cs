@@ -23,6 +23,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Windows.Forms;
+using System.Text;
 
 namespace McForge
 {
@@ -496,6 +497,7 @@ namespace McForge
 			}
 			CloseConnection();
 		}
+
 		protected void SendMessage(byte PlayerID, string message)
 		{
 			packet pa = new packet();
