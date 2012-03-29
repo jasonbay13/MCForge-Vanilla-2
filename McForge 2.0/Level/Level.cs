@@ -94,41 +94,56 @@ namespace McForge
 		}
 
 		public static Level LoadLevel(string name)
-		{
-            Level level;
+        {
+            Level level = null;
             if (!File.Exists("levels\\" + name + ".mc2")) return null;
-            using (FileStream fs = new FileStream("levels\\" + name + ".mc2", FileMode.Open))
+            using (FileStream fs = new FileStream("levels\\" + name + ".lvl", FileMode.Open))
             {
                 using (GZipStream gz = new GZipStream(fs, CompressionMode.Decompress))
                 {
-                    byte[] temp = new byte[4];
-                    fs.Read(temp, 0, 4);
-                    if (!temp.SequenceEqual(magic)) { Server.Log("Invalid level file."); return null; }
-                    temp = new byte[10];
-                    fs.Read(temp, 0, 6);
-                    level = new Level(name, new Point3(BitConverter.ToInt16(temp, 0), BitConverter.ToInt16(temp, 2), BitConverter.ToInt16(temp, 4)));
+                    byte[] ver = new byte[2];
+                    gz.Read(ver, 0, ver.Length);
+                    if (BitConverter.ToUInt16(ver, 0) != 1874) { Server.Log("Bad level file."); return null; }
+
+                    byte[] header = new byte[16];
+                    gz.Read(header, 0, header.Length);
+                    level = new Level(name, new Point3(BitConverter.ToUInt16(header, 0), BitConverter.ToUInt16(header, 2), BitConverter.ToUInt16(header, 4)))
+                    {
+                        SpawnPos = new Point3(BitConverter.ToUInt16(header, 6), BitConverter.ToUInt16(header, 8), BitConverter.ToUInt16(header, 10)),
+                        SpawnRot = new byte[2] { header[12], header[13] },
+                        //permissionvisit = (LevelPermission)header[14];
+                        //permissionbuild = (LevelPermission)header[15];
+                    };
                     gz.Read(level.data, 0, level.data.Length);
                 }
             }
-            level.SpawnPos = new Point3((short)(level.Size.x / 2), (short)(level.Size.z / 2), (short)(level.Size.y));
-            level.SpawnRot = new byte[2] { 0, 0 };
-			return level;
+            return level;
 		}
 
         public bool SaveLevel()
         {
             if (!Directory.Exists("levels")) return false;
-            using (FileStream fs = new FileStream("levels\\" + Name + ".mc2", FileMode.Create))
+            using (FileStream fs = new FileStream("levels\\" + Name + ".lvl", FileMode.Create))
             {
-                    using (GZipStream gz = new GZipStream(fs, CompressionMode.Compress))
-                    {
-                        fs.Write(magic, 0, 4); // writes the filetype identifier ("MC2.")
-                        fs.Write(BitConverter.GetBytes(Size.x), 0, 2);
-                        fs.Write(BitConverter.GetBytes(Size.z), 0, 2);
-                        fs.Write(BitConverter.GetBytes(Size.y), 0, 2);
-                        //Array.ForEach(data, ms.WriteByte);
-                        gz.Write(data, 0, data.Length); // will need to be changed probably (for custom blocks maybe).
-                    }
+                using (GZipStream gz = new GZipStream(fs, CompressionMode.Compress))
+                {
+                    byte[] header = new byte[16];
+                    BitConverter.GetBytes(1874).CopyTo(header, 0);
+                    gz.Write(header, 0, 2);
+
+                    BitConverter.GetBytes(Size.x).CopyTo(header, 0);
+                    BitConverter.GetBytes(Size.z).CopyTo(header, 2);
+                    BitConverter.GetBytes(Size.y).CopyTo(header, 4);
+                    BitConverter.GetBytes(SpawnPos.x).CopyTo(header, 6);
+                    BitConverter.GetBytes(SpawnPos.z).CopyTo(header, 8);
+                    BitConverter.GetBytes(SpawnPos.y).CopyTo(header, 10);
+                    header[12] = SpawnRot[0];
+                    header[13] = SpawnRot[1];
+                    //header[14] = (byte)permissionvisit;
+                    //header[15] = (byte)permissionbuild;
+                    gz.Write(header, 0, header.Length);
+                    gz.Write(data, 0, data.Length);
+                }
             }
             return true;
         }

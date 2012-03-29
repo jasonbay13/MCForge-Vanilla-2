@@ -565,8 +565,9 @@ namespace McForge
 					//Here we loop through the whole map and check/convert the blocks as necesary
 					//We then add them to our blocks array so we can send them to the player
 					block = level.data[pos];
-					if (block < 50) blocks[pos] = block;
-					else blocks[pos] = Blocks.CustomBlocks[block].VisibleType;
+                    if (block < 50) blocks[pos] = block;
+                    else if (Blocks.CustomBlocks.ContainsKey(block))
+                        blocks[pos] = Blocks.CustomBlocks[block].VisibleType;
 				});
 
 				pa.Add(blocks); //add the blocks to the packet

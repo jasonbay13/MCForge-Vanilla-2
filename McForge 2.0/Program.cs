@@ -52,7 +52,7 @@ namespace McForge
                                 Console.WriteLine(Server.Mainlevel.SaveLevel() ? "Sucessfully save level." : "Failed to save level.");
                                 continue;
                             case "/load":
-                                Console.WriteLine(Level.LoadLevel("main") != null ? "Sucessfully loaded level." : "Failed to load level.");
+                                Console.WriteLine((Server.Mainlevel = Level.LoadLevel("main")) != null ? "Sucessfully loaded level." : "Failed to load level.");
                                 continue;
                             default:
                                 Console.WriteLine("Invalid command.");
