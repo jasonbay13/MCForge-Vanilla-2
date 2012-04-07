@@ -46,11 +46,7 @@ namespace MCForge.Interface
                         while ((read = fs.Read(buffer, 0, 1024)) > 0)
                             ms.Write(buffer, 0, read);
                         lib = Assembly.Load(ms.ToArray());
-                        ms.Close();
-                        ms.Dispose();
                     }
-                    fs.Close();
-                    fs.Dispose();
                 }
                 try
                 {

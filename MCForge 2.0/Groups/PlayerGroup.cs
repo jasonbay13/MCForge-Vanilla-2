@@ -205,11 +205,11 @@ namespace MCForge.Groups
                 if (!Directory.Exists(Path.GetDirectoryName(file)))
                     Directory.CreateDirectory(Path.GetDirectoryName(file));
 
-                TextWriter o = new StreamWriter(file);
-                foreach (string s in players.ToArray())
-                    o.WriteLine(s.ToLower());
-                o.Flush();
-                o.Close();
+                using (TextWriter o = new StreamWriter(file))
+                {
+                    foreach (string s in players.ToArray())
+                        o.WriteLine(s.ToLower());
+                }
                 return true;
             }
             catch
@@ -228,17 +228,16 @@ namespace MCForge.Groups
             try
             {
                 string line;
-                TextReader file = new StreamReader(this.file);
-
-                while ((line = file.ReadLine()) != null)
+                using (TextReader file = new StreamReader(this.file))
                 {
-                    Server.Log(this.file + ":" + line);
-                    if (!string.IsNullOrEmpty(line))
-                        if (!players.Contains(line.ToLower()))
-                            players.Add(line.ToLower());
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        Server.Log(this.file + ":" + line);
+                        if (!string.IsNullOrEmpty(line))
+                            if (!players.Contains(line.ToLower()))
+                                players.Add(line.ToLower());
+                    }
                 }
-                file.Close();
-                file.Dispose();
             }
             catch
             {

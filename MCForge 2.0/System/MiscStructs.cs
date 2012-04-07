@@ -66,8 +66,11 @@ namespace MCForge.Core {
         public static bool operator !=(Vector3 a, Vector3 b) {
             return !(a.x == b.x && a.y == b.y && a.z == b.z);
         }
-        public bool Equals(Vector3 obj) {
-            return this == obj;
+        public override bool Equals(object obj) {
+            return base.Equals(obj);
+        }
+        public override int GetHashCode() {
+            return base.GetHashCode();
         }
     }
 
@@ -224,16 +227,14 @@ namespace MCForge.Core {
 
 		public void GZip()
 		{
-			using (var ms = new System.IO.MemoryStream())
-			{
-
-				using (var gs = new GZipStream(ms, CompressionMode.Compress, true))
-					gs.Write(bytes, 0, bytes.Length);
-
-				ms.Position = 0;
-				bytes = new byte[ms.Length];
-				ms.Read(bytes, 0, (int)ms.Length);
-			}
+            using (var ms = new System.IO.MemoryStream())
+            {
+                var gs = new GZipStream(ms, CompressionMode.Compress, true);
+                gs.Write(bytes, 0, bytes.Length);
+                ms.Position = 0;
+                bytes = new byte[ms.Length];
+                ms.Read(bytes, 0, (int)ms.Length);
+            }
 		}
 
 		#region == Host <> Network ==

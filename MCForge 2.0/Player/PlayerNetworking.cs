@@ -333,9 +333,11 @@ namespace MCForge.Entity
 
 			string textz = File.ReadAllText("text/replacementwords.txt");
 			if (textz == "") { File.WriteAllText("text/replacementwords.txt", "Pepper"); }
-			StreamReader w = File.OpenText("text/replacementwords.txt");
-			while (!w.EndOfStream) replacement.Add(w.ReadLine());
-			w.Dispose();
+            using (StreamReader w = File.OpenText("text/replacementwords.txt"))
+            {
+                while (!w.EndOfStream)
+                    replacement.Add(w.ReadLine());
+            }
 
 			string[] badwords = File.ReadAllLines("text/badwords.txt");
 			string[] replacementwords = File.ReadAllLines("text/replacementwords.txt");

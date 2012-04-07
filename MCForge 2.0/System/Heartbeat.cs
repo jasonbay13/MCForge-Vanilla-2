@@ -57,7 +57,7 @@ namespace MCForge.Core
                 if (line != null)
                     URL = line;
             }
-            responseStream.Close(); responseStreamReader.Close();
+            /*responseStream.Close();*/ responseStreamReader.Close(); // causes CA2202 (can be disposed more than once)
             return URL; 
         }
 

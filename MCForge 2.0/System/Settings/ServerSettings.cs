@@ -345,8 +345,9 @@ namespace MCForge.Utilities.Settings {
         }
 
         internal static string GenerateSalt() {
-            var desCrypto = (DESCryptoServiceProvider)DES.Create();
-            return Encoding.ASCII.GetString(desCrypto.Key);
+            using (var desCrypto = (DESCryptoServiceProvider)DES.Create()) {
+                return Encoding.ASCII.GetString(desCrypto.Key);
+            }
         }
 
         public static bool HasKey(string key) {
