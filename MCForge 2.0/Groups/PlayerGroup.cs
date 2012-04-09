@@ -228,17 +228,16 @@ namespace MCForge.Groups
             try
             {
                 string line;
-                TextReader file = new StreamReader(this.file);
-
-                while ((line = file.ReadLine()) != null)
+                using (TextReader file = new StreamReader(this.file))
                 {
-                    Server.Log(this.file + ":" + line);
-                    if (!string.IsNullOrEmpty(line))
-                        if (!players.Contains(line.ToLower()))
-                            players.Add(line.ToLower());
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        Server.Log(this.file + ":" + line);
+                        if (!string.IsNullOrEmpty(line))
+                            if (!players.Contains(line.ToLower()))
+                                players.Add(line.ToLower());
+                    }
                 }
-                file.Close();
-                file.Dispose();
             }
             catch
             {

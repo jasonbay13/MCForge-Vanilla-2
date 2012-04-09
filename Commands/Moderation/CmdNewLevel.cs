@@ -31,21 +31,48 @@ namespace CommandDll
 
         public void Use(Player p, string[] args) //TODO Make this more customizeable
         {
-            if (Level.FindLevel(args[0]) == null)
+            Vector3 size;
+            string type = "";
+            switch (args.Length) // initialize depending on arguments given
             {
-                Level temp = Level.CreateLevel(new Vector3(32, 32, 32), Level.LevelTypes.Flat, args[0]);
-                Level.AddLevel(temp);
-                Player.UniversalChat("Created level " + args[0] + "!");
+                case 1:
+                    size = new Vector3(64, 64, 32);
+                    break;
+                case 4:
+                    size = new Vector3(short.Parse(args[1]),short.Parse(args[2]),short.Parse(args[3]));
+                    break;
+                case 5:
+                    size = new Vector3(short.Parse(args[1]), short.Parse(args[2]), short.Parse(args[3]));
+                    type = args[4];
+                    break;
+                default: Help(p); return;
             }
-            else
+            if (Level.FindLevel(args[0]) != null)
             {
                 p.SendMessage("This level already exists!");
+                return;
             }
+
+            Level temp = null;
+            switch (type.ToLower()) // experimental type finding
+            {
+                case "flat":
+                    temp = Level.CreateLevel(size, Level.LevelTypes.Flat, args[0]);
+                    break;
+                default: 
+                    temp = Level.CreateLevel(size, Level.LevelTypes.Flat, args[0]); 
+                    break;
+            }
+
+            if (temp == null) { p.SendMessage("Level creation failed"); return; } // something is wrong if you get this
+            Level.AddLevel(temp);
+            Player.UniversalChat("Created level " + args[0] + "!");
         }
 
         public void Help(Player p)
         {
-            p.SendMessage("/newlevel [name] - Creates a new level called [name].");
+            p.SendMessage("/newlevel [name] (x z y) (type) - Creates a new level called [name].");
+            p.SendMessage("Currently, types are experimental.");
         }
 
         public void Initialize()
