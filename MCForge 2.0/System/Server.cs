@@ -21,6 +21,9 @@ using MCForge.Interface;
 using MCForge.Interface.Command;
 using MCForge.Utilities.Settings;
 using MCForge.World;
+using System.Diagnostics;
+using System.Threading;
+using System.Reflection;
 
 namespace MCForge.Core {
     public static class Server {
@@ -179,6 +182,48 @@ namespace MCForge.Core {
             StartListening();
             Started = true;
             Log("[Important]: Server Started.", ConsoleColor.Black, ConsoleColor.White);
+        }
+
+        /// <summary>
+        /// Disconnect everyone with shutdownmessage.
+        /// Save all levels then terminate the current process.
+        /// </summary>
+        /// <param name="exitCode">exitCode, self explanatory</param>
+        public static void ShutDown(int exitCode = 0)
+        {
+            shuttingDown = true;
+            Players.ForEach((p) => { p.Kick(ServerSettings.GetSetting("ShutdownMessage")); });
+            Level.levels.ForEach((l) => { Command.Commands["save"].Use(null, new[] { l.Name }); });
+            int num = 0;
+            while (PlayerCount > 0 && num < 10) //prevents from losing tcp connection before shutdownmessage is sent 
+                //with timeout of about 150 ms
+            {
+                Thread.Sleep(1);
+                num++;
+            }
+            Environment.Exit(exitCode);
+        }
+        /// <summary>
+        /// Disconnect everyone with shutdownmessage.
+        /// Save all levels.
+        /// Start Mcforge and terminate the current process.
+        /// </summary>
+        public static void Restart(int exitCode = 0)
+        {
+            shuttingDown = true;
+            Players.ForEach((p) => { p.Kick(ServerSettings.GetSetting("RestartMessage")); });
+            Level.levels.ForEach((l) => { Command.Commands["save"].Use(null, new[] { l.Name }); });
+            ProcessStartInfo start = Process.GetCurrentProcess().StartInfo;
+            string t = Assembly.GetExecutingAssembly().CodeBase;
+            int num = 0;
+            while (PlayerCount > 0 && num < 10) //prevents from losing tcp connection before restart message is sent 
+            //with timeout of about 150 ms
+            {
+                Thread.Sleep(1);
+                num++;
+            }
+            Process.Start(String.IsNullOrEmpty(start.FileName) ? t : start.FileName);
+            Environment.Exit(exitCode);
         }
 
         static void Update() {

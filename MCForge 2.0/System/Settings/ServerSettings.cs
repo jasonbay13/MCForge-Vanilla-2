@@ -61,6 +61,7 @@ namespace MCForge.Utilities.Settings {
                 new SettingNode("Public", "true", "if set to true, your server will show up on MCForge.net server list and Minecraft.net's server list"),
                 new SettingNode("UsingConsole", "true", "set to \"false\" if you want gui. If using mono set to \"true\""),
                 new SettingNode("ShutdownMessage", "Server shutting down!", "Message to show when server is shutting down"),
+                new SettingNode("RestartMessage", "Server Restarting! Rejoin in 10 seconds.", "Message to show when server is Restarting"),
                 new SettingNode("WelcomeMessage", "Welcome $name to $server<br>enjoy your stay", "Welcome message, to signify a line break use \"<br>\""),
                 new SettingNode("ConfigPath", "config/", "File path for group player properties, do not mess with unless you know what you are doing"),
                 new SettingNode("MessageAppending", "true", "allow use of message appending, ex using \">\" at the end of your message will allow you to finish your statement on a new chat segment"),
