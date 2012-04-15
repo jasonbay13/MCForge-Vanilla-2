@@ -194,17 +194,10 @@ namespace MCForge.Core {
             shuttingDown = true;
             Players.ForEach((p) => { p.Kick(ServerSettings.GetSetting("ShutdownMessage")); });
             Level.levels.ForEach((l) => { Command.Commands["save"].Use(null, new[] { l.Name }); });
-            int num = 0;
-            while (PlayerCount > 0 && num < 10) //prevents from losing tcp connection before shutdownmessage is sent 
-                //with timeout of about 150 ms
-            {
-                Thread.Sleep(1);
-                num++;
-            }
             Environment.Exit(exitCode);
         }
         /// <summary>
-        /// Disconnect everyone with shutdownmessage.
+        /// Disconnect everyone with restartmessage.
         /// Save all levels.
         /// Start Mcforge and terminate the current process.
         /// </summary>
@@ -213,16 +206,7 @@ namespace MCForge.Core {
             shuttingDown = true;
             Players.ForEach((p) => { p.Kick(ServerSettings.GetSetting("RestartMessage")); });
             Level.levels.ForEach((l) => { Command.Commands["save"].Use(null, new[] { l.Name }); });
-            ProcessStartInfo start = Process.GetCurrentProcess().StartInfo;
-            string t = Assembly.GetExecutingAssembly().CodeBase;
-            int num = 0;
-            while (PlayerCount > 0 && num < 10) //prevents from losing tcp connection before restart message is sent 
-            //with timeout of about 150 ms
-            {
-                Thread.Sleep(1);
-                num++;
-            }
-            Process.Start(String.IsNullOrEmpty(start.FileName) ? t : start.FileName);
+            System.Windows.Forms.Application.Restart();
             Environment.Exit(exitCode);
         }
 
