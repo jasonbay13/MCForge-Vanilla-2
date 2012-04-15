@@ -53,6 +53,7 @@
     <Compile Include="Moderation\CmdDemote.cs" />
     <Compile Include="Moderation\CmdGoto.cs" />
     <Compile Include="Moderation\CmdLoad.cs" />
+    <Compile Include="Moderation\CmdLimit.cs" />
     <Compile Include="Moderation\CmdNewLevel.cs" />
     <Compile Include="Moderation\CmdPatrol.cs" />
     <Compile Include="Information\CmdPlayers.cs" />

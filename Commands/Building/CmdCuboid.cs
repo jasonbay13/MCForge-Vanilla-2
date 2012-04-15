@@ -264,11 +264,11 @@ namespace CommandDll {
             //Server force cuboid
 
             //Group Max Blocks permissions here
-            //if(buffer.Count > p.group.maxBlocks)
-            //{
-            //p.SendMessage("You tried to cuboid + " buffer.Count + "blocks.");
-            //p.SendMessage("You cannot cuboid more than " + p.group.maxBlocks + ".");
-            //}
+            if (buffer.Count > p.group.maxBlockChange)
+            {
+                p.SendMessage("You tried to cuboid " + buffer.Count + "blocks.");
+                p.SendMessage("You cannot cuboid more than " + p.group.maxBlockChange + ".");
+            }
 
             //Silent pyramids == false
 

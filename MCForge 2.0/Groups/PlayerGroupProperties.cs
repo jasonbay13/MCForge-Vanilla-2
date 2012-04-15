@@ -31,9 +31,10 @@ namespace MCForge.Groups
                     writer.WriteStartElement("Group");
                     writer.WriteElementString("name", group.name);
                     writer.WriteElementString("permission", group.permission.ToString());
-                    writer.WriteElementString("color", group.colour.ToString().Remove(0, 1));
+                    writer.WriteElementString("color", group.colour.Remove(0, 1));
 
                     writer.WriteElementString("file", group.file);
+                    writer.WriteElementString("maxblockchanges", group.maxBlockChange.ToString());
                     //{
                     //    writer.WriteStartElement("players");
                     //    foreach (string s in group.players)

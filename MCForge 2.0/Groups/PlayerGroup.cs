@@ -74,7 +74,7 @@ namespace MCForge.Groups
         /// <summary>
         /// The maximum amount of blocks this group can change.
         /// </summary>
-        public int maxBlockChange { get { return _maxblockchange; } set { maxBlockChange = value; } }
+        public int maxBlockChange { get { return _maxblockchange; } set { _maxblockchange = value; } }
 
         string _file;
         /// <summary>
